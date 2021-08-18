@@ -49,4 +49,10 @@ void pop(Stack *st);
 /* @brief Print out the stack */
 void printStack(Stack *st);
 
+/* @brief Reverses the entire stack 
+*  @param The stack which will be reversed
+*  @return The new stack 
+*/
+Stack* reverse(Stack *st)
+
 #endif

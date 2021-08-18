@@ -1,5 +1,5 @@
 #include "hashmap.h"
-#include "../Listas/linked_list.h"
+
 
 void randKey(char *str)
 {
@@ -8,7 +8,6 @@ void randKey(char *str)
 #define MAX_CHAR_ASCII 122
 #endif
     int i = 0;
-    srand(time(0));
     for (i = 0; i < MAX_WORD_LENGTH; ++i)
     {
         char rnd = (char)(MIN_CHAR_ASCII + (rand() % (MAX_CHAR_ASCII - MIN_CHAR_ASCII)));
@@ -34,54 +33,83 @@ unsigned int hash(size_t length, const char *str)
 HashMap *createHashMap()
 {
     HashMap *hs = malloc(sizeof(HashMap));
-    hs->current = NULL;
     hs->size = 0;
+    hs->array = (HashMap_Node *)malloc(sizeof(hs->size));
 
     return hs;
 }
 
-Node *createNode()
+HashMap_Node *createHashMap_Node(HashMap *hs, void *data)
 {
-    Node *node = malloc(sizeof(Node));
-    node->next = NULL;
+    HashMap_Node *node = malloc(sizeof(HashMap_Node));
     node->hash = malloc(sizeof(MAX_WORD_LENGTH));
+    randKey(node->hash);
+    node->key = hash(hs->size, node->hash);
+    node->list = NULL;
+    node->data = data;
+
     return node;
 }
 
-
-size_t HashMap_size(HashMap *hs)
+size_t getSize(HashMap *hs)
 {
     return hs->size;
 }
 
-
-void connectNode(HashMap *hs, void* data)
+void put(HashMap *hs, void *data)
 {
-    Node *newEl = createNode();
-    randKey(newEl->hash);
 
-    if (hs->size == 0){
-        hs->current = newEl;
-    }
-    else {
-        HashMap_it it = hs->current;
-        for (int i = 0; i < hs->size; ++i){
-            it = it->next;
-        }
-    }
     hs->size++;
+    HashMap_Node *newEl = createHashMap_Node(hs, data);
+
+    hs->array = realloc(hs->array, sizeof(HashMap_Node) * hs->size);
+
+    if (hs->array[newEl->key].hash == NULL)
+    {
+        hs->array[newEl->key] = *newEl;
+    }
+    else
+    {
+        HashList *list = createList();
+        if (hs->array[newEl->key].list == NULL)
+        {
+            hs->array[newEl->key].list = list;
+        }
+        appendNode(hs->array[newEl->key].list, newEl->data, newEl->key, newEl->hash);
+        hs->size--;
+    }
 }
 
-
-int main()
+size_t isEmpty(HashMap *hs)
 {
+    return hs->size == 0 ? 1 : 0;
+}
 
-    HashMap *hs = createHashMap();
-   
+void remove(HashMap *hs, char *hash){
+    assert(!isEmpty(hs));
+
     
+}
+void printHash(HashMap *hs)
+{
+    assert(!isEmpty(hs));
 
-        test->key = hash(hs->size, test->hash);
-
-    printf("[%d] -> %s\n", test->key, test->hash);
-    return 0;
+    for (int i = 0; i < getSize(hs); ++i)
+    {
+        if (hs->array[i].list)
+        {
+            HashList_it *it = hs->array[i].list->head;
+            for (int j = 0; j < list_size(hs->array[i].list); ++j)
+            {
+                printf("List: \n");
+                printf("Key: %u\n", it->key);
+                printf("Data: %d\n", *(int *)it->data);
+                printf("Hash: %s\n\n", it->hash);
+                it = it->next;
+            }
+        }
+        printf("Key: %u\n", hs->array[i].key);
+        printf("Data: %d\n", *(int *)hs->array[i].data);
+        printf("Hash: %s\n\n", hs->array[i].hash);
+    }
 }
