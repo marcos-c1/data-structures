@@ -1,43 +1,46 @@
-#include "linked_list.h"
+#include "hashlist.h"
 
-List *createList()
+HashList *createList()
 {
-    List *list = malloc(sizeof(List));
+    HashList *list = malloc(sizeof(HashList));
     list->head = list->tail = NULL;
     list->size = 0;
 
     return list;
 }
 
-Node *createNode()
+HashList_Node *createNode(unsigned int key, void* data, char *hash)
 {
-    Node *el = malloc(sizeof(Node));
+    HashList_Node *el = malloc(sizeof(HashList_Node));
     el->next = NULL;
+    el->data = data;
+    el->hash = hash;
+    el->key = key;
 
     return el;
 }
 
-void removeNode(Node *node)
+void removeNode(HashList_Node *node)
 {
     free(node);
     node = NULL;
 }
 
-size_t list_size(List *list)
+size_t list_size(HashList *list)
 {
     return list->size;
 }
 
-size_t list_empty(List *list)
+size_t list_empty(HashList *list)
 {
     return list_size(list) > 0 ? 0 : 1;
 }
 
-void deleteHead(List *list)
+void deleteHead(HashList *list)
 {
     assert(!list_empty(list));
 
-    Node *newEl = createNode();
+    HashList_Node *newEl = malloc(sizeof(HashList_Node));
     newEl = list->head;
     list->head = list->head->next;
 
@@ -46,11 +49,11 @@ void deleteHead(List *list)
     list->size--;
 }
 
-void deleteTail(List *list)
+void deleteTail(HashList *list)
 {
     assert(!list_empty(list));
 
-    List_it *it = list->head;
+    HashList_it *it = list->head;
 
     for (int i = 0; i < list_size(list) - 2; ++i)
     {
@@ -62,19 +65,19 @@ void deleteTail(List *list)
     it->next = NULL;
 }
 
-Node* accessHead(List *list)
+HashList_Node* accessHead(HashList *list)
 {
     assert(!list_empty(list));
     return list->head;
 }
 
-Node* accessTail(List *list)
+HashList_Node* accessTail(HashList *list)
 {
     assert(!list_empty(list));
     return list->tail;
 }
 
-void removeList(List *list)
+void removeList(HashList *list)
 {
     assert(!list_empty(list));
 
@@ -86,7 +89,7 @@ void removeList(List *list)
     list = NULL;
 }
 
-void deleteNode_At_Position(List *list, size_t position)
+void deleteNode_At_Position(HashList *list, size_t position, void* data, unsigned int key, char *hash)
 {
     assert(!list_empty(list) && position < list_size(list));
 
@@ -100,8 +103,8 @@ void deleteNode_At_Position(List *list, size_t position)
 
     else
     {
-        List_it *it = list->head;
-        Node *node = createNode();
+        HashList_it *it = list->head;
+        HashList_Node *node = createNode(key, data, hash);
 
         for (int i = 0; i < position - 1; ++i)
         {
@@ -116,23 +119,22 @@ void deleteNode_At_Position(List *list, size_t position)
     }
 }
 
-void insertNode(List *list, size_t position, void* data)
+void insertNode(HashList *list, size_t position, void* data, unsigned int key, char *hash)
 {
     assert(position <= list_size(list));
     if (position == 0){
-        preppendNode(list, data);
+        preppendNode(list, data, key, hash);
     } 
     
     else if (position == list_size(list)){
-        appendNode(list, data);
+        appendNode(list, data, key, hash);
     }
     
     else {
-        Node *newEl = createNode();
-        newEl->data = data;
-        Node *node = createNode();
+        HashList_Node *newEl = createNode(key, data, hash);
+        HashList_Node *node = createNode(key, data, hash);
 
-        List_it *it = list->head;
+        HashList_it *it = list->head;
         for (int i = 0; i < position - 1; ++i){
             it = it->next;
         }
@@ -144,11 +146,10 @@ void insertNode(List *list, size_t position, void* data)
     }
 }
 
-void appendNode(List *list, void *data)
+void appendNode(HashList *list, void *data, unsigned int key, char *hash)
 {
 
-    Node *newEl = createNode();
-    newEl->data = data;
+    HashList_Node *newEl = createNode(key, data, hash);
 
     if (list->size == 0)
     {
@@ -163,10 +164,9 @@ void appendNode(List *list, void *data)
     list->size++;
 }
 
-void preppendNode(List *list, void *data)
+void preppendNode(HashList *list, void *data, unsigned int key, char *hash)
 {
-    Node *newEl = createNode();
-    newEl->data = data;
+    HashList_Node *newEl = createNode(key, data, hash);
 
     newEl->next = list->head;
     list->head = newEl;
@@ -178,11 +178,11 @@ void preppendNode(List *list, void *data)
     list->size++;
 }
 
-void printList(List *list)
+void printList(HashList *list)
 {
     assert(!list_empty(list));
 
-    Node *next = list->head;
+    HashList_Node *next = list->head;
     for (int i = 0; i < list_size(list); ++i)
     {
         if (i == list->size - 1)

@@ -1,10 +1,11 @@
 #ifndef LINKED_LIST
 #define LINKED_LIST
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
+#include "../Listas/linked_list.h"
 typedef struct List
 {
     struct Node *head;
