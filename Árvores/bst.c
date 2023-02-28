@@ -113,16 +113,3 @@ void inOrder(Node *node)
         inOrder(node->right);
     }
 }
-
-int main()
-{
-    BST *bst;
-    createBST(&bst, int_constructor, int_destructor, int_comparator);
-    int valores[5] = {1, 2, 3, 4, 5};
-    int value = 2;
-    for (short int i = 0; i < 5; ++i){
-        insert(bst, &valores[i]);
-    }
-
-    return 0;
-}
